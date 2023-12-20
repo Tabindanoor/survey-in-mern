@@ -1,187 +1,182 @@
-// import React, { useState, useEffect } from 'react';
-// import axios from 'axios';
-
-// const SurveySection = () => {
-//   const [surveys, setSurveys] = useState([]);
-//   const [selectedSurvey, setSelectedSurvey] = useState(null);
-//   const [surveyResponses, setSurveyResponses] = useState({});
-//   const [isLoading, setIsLoading] = useState(true);
-
-//   useEffect(() => {
-//     fetchSurveys();
-//   }, []);
-
-//   const fetchSurveys = async () => {
-//     try {
-//       const response = await axios.get('http://localhost:5000/api/surveys/all');
-//       setSurveys(response.data);
-//       setIsLoading(false);
-//     } catch (error) {
-//       console.error('Error fetching surveys:', error.message);
-//     }
-//   };
-
-//   const selectSurvey = (survey) => {
-//     setSelectedSurvey(survey);
-//     // Initialize responses with empty values for each question
-//     const initialResponses = {};
-//     survey.questions.forEach((question) => {
-//       initialResponses[question.question] = '';
-//     });
-//     setSurveyResponses(initialResponses);
-//   };
-
-//   const submitSurvey = async () => {
-//     try {
-//       // Send surveyResponses to the server to store the responses
-//       console.log({ surveyResponses });
-//       // Clear selected survey and responses
-//       setSelectedSurvey(null);
-//       setSurveyResponses({});
-//     } catch (error) {
-//       console.error('Error submitting survey responses:', error.message);
-//     }
-//   };
-
-//   return (
-//     <div>
-//       <h2>Survey Section</h2>
-
-//       {isLoading ? (
-//         <p>Loading surveys...</p>
-//       ) : (
-//         <div>
-//           <h3>Available Surveys</h3>
-//           <ul>
-//             {surveys.map((survey) => (
-//               <li key={survey._id} onClick={() => selectSurvey(survey)}>
-//                 {survey.name}
-//               </li>
-//             ))}
-//           </ul>
-
-//           {selectedSurvey && (
-//             <div>
-//               <h3>Selected Survey: {selectedSurvey.name}</h3>
-//               <ul>
-//                 {selectedSurvey.questions.map((question) => (
-//                   <li key={question.question}>
-//                     {question.question}
-//                     <input
-//                       type="text"
-//                       value={surveyResponses[question.question]}
-//                       onChange={(e) => {
-//                         setSurveyResponses({
-//                           ...surveyResponses,
-//                           [question.question]: e.target.value,
-//                         });
-//                       }}
-//                     />
-//                   </li>
-//                 ))}
-//               </ul>
-//               <button onClick={submitSurvey}>Submit Survey</button>
-//             </div>
-//           )}
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default SurveySection;
 
 
-import React, { useState } from 'react';
+
 import axios from 'axios';
-
-const SurveyCreator = () => {
-  const [questions, setQuestions] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState('');
-  const [options, setOptions] = useState([]);
-  const [currentOption, setCurrentOption] = useState('');
-  
-  const addQuestion = () => {
-    if (currentQuestion.trim() !== '') {
-      setQuestions([...questions, { question: currentQuestion, options }]);
-      setCurrentQuestion('');
-      setOptions([]);
-    }
-  };
-
-  const addOption = () => {
-    if (currentOption.trim() !== '') {
-      setOptions([...options, currentOption]);
-      setCurrentOption('');
-    }
-  };
-
-  // const saveSurvey = () => {
-  //   // Send data to the server to save the survey configuration
-  //   console.log({ questions });
-  // };
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 
-  const saveSurvey = async () => {
-    try {
-      console.log("mera data ")
-      // await axios.post('http://localhost:5000/save', { questions });
-      await axios.post('http://localhost:5000/api/surveys/save', { questions });
-
-      // await axios.post('http://localhost:5000/api/surveys/save', { questions });
-
-      console.log('Survey questions saved successfully!');
-    } catch (error) {
-      console.error('Error saving survey questions:', error.message);
-    }
-  };
-  
-
+const MessageModal = ({ message, onClose }) => {
   return (
-    <div className=' text-center'>
-      <h2 className='m-4 text-3xl  font-extralight'>Create Your Own Survey</h2>
-      
-      <div className='flex justify-center'>
-        <label className='bg-red-300 p-3'>Question:</label>
-        <input
-          type="text"
-          value={currentQuestion}
-          onChange={(e) => setCurrentQuestion(e.target.value)}
-          className='bg-gray-400 mx-1 '
-        />
-        <button className='bg-yellow-600 rounded-full p-2  ' onClick={addQuestion}>Add Question</button>
+    <div className="fixed inset-0 flex items-center justify-center">
+      <div className="bg-white p-4 shadow-lg rounded-md">
+        <div className="text-lg text-red-700 font-semibold mb-2">{message}</div>
+        <button onClick={onClose} className="bg-blue-500 text-white py-2 px-4 rounded-md">
+          Close
+        </button>
       </div>
-      <br />
-
-      <div className='flex justify-center'>
-        <label className='bg-red-300 p-3'>Options:</label>
-        <input
-          type="text"
-          value={currentOption}
-          onChange={(e) => setCurrentOption(e.target.value)}
-          className='bg-gray-400 mx-1 '
-
-        />
-        <button className='bg-yellow-600 rounded-full p-2  '  onClick={addOption}>Add Option</button>
-      </div>
-      <br /><br />
-      <button className='bg-blue-300 p-2 rounded-md' onClick={saveSurvey}>Save Survey</button>
-
-      <h3 className='text-2xl font-semibold'>Survey Preview</h3>
-      <ul>
-        {questions.map((q, index) => (
-          <li key={index} className='text-2xl font-extrabold'>
-            {q.question}
-            <ul>
-              {q.options.map((opt, optIndex) => (
-                <li key={optIndex} className='text-xl font-semibold'>{opt}</li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 };
 
-export default SurveyCreator;
+const SurveySection = () => {
+  const [userSurvey, setUserSurvey] = useState({
+    question: '',
+    options: [],
+  });
+
+  const [allQuestions, setAllQuestions] = useState([]);
+  const [userSurveys, setUserSurveys] = useState([]);
+  // const [error, setError] = useState('');
+  // const [success, setSuccess] = useState('');
+
+
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const submitUserSurvey = async () => {
+    if (userSurvey.question.trim() === '' || userSurvey.options.some((option) => option.trim() === '')) {
+      setShowErrorModal(true);
+      setShowSuccessModal(false);
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:5000/api/user-surveys', userSurvey);
+      fetchUserSurveys();
+      setAllQuestions([...allQuestions, userSurvey]);
+      setUserSurvey({
+        question: '',
+        options: [],
+      });
+      setShowErrorModal(false);
+      setShowSuccessModal(true);
+      setTimeout(() => {
+        setShowSuccessModal(false);
+      }, 3000);
+    } catch (error) {
+      console.error('Error submitting user survey:', error.message);
+      setShowErrorModal(true);
+      setShowSuccessModal(false);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchQuestions();
+    fetchUserSurveys();
+  }, []);
+
+  const fetchQuestions = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/user-surveys');
+      setAllQuestions(response.data);
+    } catch (error) {
+      console.error('Error fetching questions:', error.message);
+    }
+  };
+
+  const fetchUserSurveys = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/user-surveys');
+      setUserSurveys(response.data);
+    } catch (error) {
+      console.error('Error fetching user surveys:', error.message);
+    }
+  };
+
+  // const submitUserSurvey = async () => {
+  //   // Validate if question and options are not empty
+  //   if (userSurvey.question.trim() === '' || userSurvey.options.some((option) => option.trim() === '')) {
+  //     setError('Please enter a question and at least one option.');
+  //     setSuccess('');
+  //     return;
+  //   }
+
+  //   try {
+  //     await axios.post('http://localhost:5000/api/user-surveys', userSurvey);
+  //     fetchUserSurveys();
+  //     setAllQuestions([...allQuestions, userSurvey]); // Assuming you want to update allQuestions too
+  //     setUserSurvey({
+  //       question: '',
+  //       options: [],
+  //     });
+  //     setError('');
+  //     setSuccess('Survey submitted successfully!');
+  //     // Hide success message after 3 seconds
+  //     setTimeout(() => {
+  //       setSuccess('');
+  //     }, 3000);
+  //   } catch (error) {
+  //     console.error('Error submitting user survey:', error.message);
+  //     setError('Error submitting survey. Please try again.');
+  //     setSuccess('');
+  //   }
+  // };
+
+  return (
+    <div className="p-8 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white rounded-lg shadow-lg">
+      <div>
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold mb-4">User-Generated Survey</h2>
+          <div className="mb-4">
+            <label className="block text-lg mb-2">Question:</label>
+            <input
+              type="text"
+              value={userSurvey.question}
+              onChange={(e) => setUserSurvey({ ...userSurvey, question: e.target.value })}
+              className="w-full p-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring focus:border-blue-300"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-lg mb-2">Options (separate with commas):</label>
+            <input
+              type="text"
+              value={userSurvey.options.join(',')}
+              onChange={(e) => setUserSurvey({ ...userSurvey, options: e.target.value.split(',') })}
+              className="w-full p-2 rounded-md bg-gray-800 text-white focus:outline-none focus:ring focus:border-blue-300"
+            />
+          </div>
+          <button
+            onClick={submitUserSurvey}
+            className="bg-blue-500 text-white py-2 px-4 rounded-md transition duration-300 hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300"
+          >
+            Submit User Survey
+          </button>
+
+          {showErrorModal && (
+        <MessageModal message="Please enter a question and at least one option." onClose={() => setShowErrorModal(false)} />
+      )}
+      {showSuccessModal && (
+        <MessageModal message="Survey submitted successfully!" onClose={() => setShowSuccessModal(false)} />
+      )}
+
+
+          {/* {error && <div className="text-red-500 mt-2">{error}</div>}
+          {success && <div className="text-green-500 mt-2">{success}</div>} */}
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold mb-4">All User Surveys</h2>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-800 text-white">
+                <th className="py-2 px-4 border">Question</th>
+                <th className="py-2 px-4 border">Options</th>
+              </tr>
+            </thead>
+            <tbody>
+              {userSurveys.map((survey) => (
+                <tr key={survey._id} className="bg-gray-700 text-white">
+                  <td className="py-2 px-4 border">{survey.question}</td>
+                  <td className="py-2 px-4 border">{survey.options.join(', ')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SurveySection;
